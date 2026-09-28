@@ -1,0 +1,91 @@
+# Vacuum Cleaner Agent
+
+print("=== VACUUM CLEANER AGENT ===")
+
+# Get input from user
+room_a = input("Enter Room A status (DIRTY/CLEAN): ").upper()
+room_b = input("Enter Room B status (DIRTY/CLEAN): ").upper()
+position = input("Enter vacuum position (A/B): ").upper()
+
+print("\n--- ANALYSIS ---")
+
+# Check whether inputs are valid
+if room_a not in ["DIRTY", "CLEAN"]:
+    print("Invalid Room A status!")
+    
+elif room_b not in ["DIRTY", "CLEAN"]:
+    print("Invalid Room B status!")
+
+elif position not in ["A", "B"]:
+    print("Invalid vacuum position!")
+
+else:
+
+    # Vacuum is at Room A
+    if position == "A":
+
+        # Room A is dirty
+        if room_a == "DIRTY":
+            print("Room A is DIRTY.")
+            print("Action: SUCK")
+
+            room_a = "CLEAN"
+
+            # Check Room B after cleaning A
+            if room_b == "DIRTY":
+                print("Room B is DIRTY.")
+                print("Action: MOVE RIGHT")
+                print("Action: SUCK")
+
+                room_b = "CLEAN"
+
+        # Room A is clean but Room B is dirty
+        elif room_a == "CLEAN" and room_b == "DIRTY":
+            print("Room A is CLEAN.")
+            print("Room B is DIRTY.")
+            print("Action: MOVE RIGHT")
+            print("Action: SUCK")
+
+            room_b = "CLEAN"
+
+        # Both rooms are clean
+        else:
+            print("Both rooms are CLEAN.")
+            print("Action: No cleaning required")
+
+    # Vacuum is at Room B
+    elif position == "B":
+
+        # Room B is dirty
+        if room_b == "DIRTY":
+            print("Room B is DIRTY.")
+            print("Action: SUCK")
+
+            room_b = "CLEAN"
+
+            # Check Room A after cleaning B
+            if room_a == "DIRTY":
+                print("Room A is DIRTY.")
+                print("Action: MOVE LEFT")
+                print("Action: SUCK")
+
+                room_a = "CLEAN"
+
+        # Room B is clean but Room A is dirty
+        elif room_b == "CLEAN" and room_a == "DIRTY":
+            print("Room B is CLEAN.")
+            print("Room A is DIRTY.")
+            print("Action: MOVE LEFT")
+            print("Action: SUCK")
+
+            room_a = "CLEAN"
+
+        # Both rooms are clean
+        else:
+            print("Both rooms are CLEAN.")
+            print("Action: No cleaning required")
+
+    # Final state
+    print("\n--- FINAL STATE ---")
+    print("Room A:", room_a)
+    print("Room B:", room_b)
