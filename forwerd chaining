@@ -1,0 +1,112 @@
+
+# Forward Chaining in First Order Logic
+
+# Knowledge Base: Initial Facts
+facts = {
+    ("American", "Robert"),
+    ("Enemy", "A", "America"),
+    ("Owns", "A", "T1"),
+    ("Missile", "T1")
+}
+
+# Rules
+rules = [
+    # Rule 1: Enemy is hostile
+    ([("Enemy", "?x", "America")],
+     ("Hostile", "?x")),
+
+    # Rule 2: Missiles are weapons
+    ([("Missile", "?x")],
+     ("Weapon", "?x")),
+
+    # Rule 3: Robert sells missiles to Country A
+    ([("Missile", "?x"), ("Owns", "A", "?x")],
+     ("Sells", "Robert", "?x", "A")),
+
+    # Rule 4: American selling weapons to hostile nations
+    ([("American", "?p"),
+      ("Weapon", "?q"),
+      ("Sells", "?p", "?q", "?r"),
+      ("Hostile", "?r")],
+     ("Criminal", "?p"))
+]
+
+
+# Match a pattern with a fact
+def match(pattern, fact, substitution):
+    if pattern[0] != fact[0]:
+        return None
+
+    if len(pattern) != len(fact):
+        return None
+
+    sub = substitution.copy()
+
+    for p, f in zip(pattern[1:], fact[1:]):
+        if p.startswith("?"):
+            if p in sub and sub[p] != f:
+                return None
+            sub[p] = f
+        elif p != f:
+            return None
+
+    return sub
+
+
+# Forward Chaining Algorithm
+def forward_chaining(facts, rules, query):
+
+    changed = True
+
+    while changed:
+        changed = False
+
+        for conditions, conclusion in rules:
+
+            substitutions = [{}]
+
+            for condition in conditions:
+                new_substitutions = []
+
+                for sub in substitutions:
+                    for fact in facts:
+                        result = match(
+                            condition, fact, sub
+                        )
+
+                        if result is not None:
+                            new_substitutions.append(result)
+
+                substitutions = new_substitutions
+
+            for sub in substitutions:
+                new_fact = tuple(
+                    sub.get(x, x) if x.startswith("?") else x
+                    for x in conclusion
+                )
+
+                if new_fact not in facts:
+                    facts.add(new_fact)
+                    print("New Fact:", new_fact)
+                    changed = True
+
+                if new_fact == query:
+                    return True
+
+    return query in facts
+
+
+# Main Program
+query = ("Criminal", "Robert")
+
+print("Initial Facts:")
+for fact in sorted(facts):
+    print(fact)
+
+print("\nForward Chaining Results:")
+
+if forward_chaining(facts, rules, query):
+    print("\nQuery Proved:", query)
+    print("Robert is Criminal.")
+else:
+    print("\nQuery Cannot Be Proved.")
